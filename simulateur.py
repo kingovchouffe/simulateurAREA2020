@@ -13,34 +13,42 @@ frametable = Frame(fenetre)
 hauteur = 520
 largeur = 778
 table = PhotoImage(file="table2020.png")
+bitmap = PhotoImage(file="robotsimu.gif")
 canvas_table = Canvas(fenetre, width=largeur*1.5, height=hauteur,bg="#3366CC",bd = "0", highlightthickness="0")
 canvas_table.create_image(largeur/2, hauteur/2, image=table)
 canvas_table.pack(side="top")
 
 ###################################################################
-robot1 = Robot(40,150,60,480,0)
-robot2 = Robot(40,210,311,442,0)
-RCVA = Robot(712,210,160,210,1)
+robot1 = Robot(40,150,60,480,90,0)
+robot2 = Robot(40,210,311,442,90,0)
+RCVA = Robot(712,210,160,210,160,1)
 #Fonction de correspondance simulateur/réalité
-
 def correspondance_x(posx_reel):
     posx_simu = posx_reel*(778/3000)-15/2
     return posx_simu
 def correspondance_y(posy_reel):
     posy_simu = posy_reel*(778/3000)-15/2
     return posy_simu
+
 #Fonction de placement de robot
 
 def place_robot(robot):
     if robot.couleur == 0:
-        canvas_table.create_oval(robot.position_x, robot.position_y, robot.position_x + 60, robot.position_y + 60, fill="blue")
+        #canvas_table.create_oval(robot.position_x, robot.position_y, robot.position_x + 60, robot.position_y + 60, fill="blue")
+
+        canvas_table.create_image(robot.position_x, robot.position_y,image=bitmap)
     else:
-        RCVA_cercle = canvas_table.create_oval(robot.position_x, robot.position_y, robot.position_x + 60, robot.position_y + 60,fill="yellow")
+        RCVA_cercle = canvas_table.create_oval(robot.position_x, robot.position_y, robot.position_x + 60, robot.position_y + 60,fill="yellow",tags="RCVA")
+
 #Fonction pour déplacer le robot adverse à la souris
+
 def deplacer(event):
-    cercle =  canvas_table.find_withtag("current")[0]
-    souris = canvas_table.find_closest(event.x, event.y)
-    canvas_table.move(cercle, event.x-canvas_table.coords(souris[0])[0] ,event.y-canvas_table.coords(souris[0])[1])
+    cercle = canvas_table.find_withtag("RCVA")
+    canvas_table.coords(cercle, event.x - 30,event.y - 30, event.x+30,event.y+30)
+    RCVA.nouvelle_position(event.x,event.y)
+
+    print("posx robot=", RCVA.position_x)
+    print("posy robot=", RCVA.position_y)
 
 #Fonction de placement de gobelet
 def place_gobelet():
